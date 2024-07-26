@@ -1,21 +1,10 @@
 (*
-  Author(s):
-    Andrej Dudenhefner (1)
-  Affiliation(s):
-    (1) TU Dortmund University, Dortmund, Germany
-*)
+  if subject expansion holds, weak normalization implies strong normalization:
 
-(*
-  Reduction from:
-    Strong normalization for given closed lambda-terms (SNclosed)
-  to:
-    Intersection Type Typability (CD_TYP)
-*)
+  Context (step' : term -> term -> Prop).
+  Context (subject_expansion : forall M N, step' M N -> typable N -> typable M).
 
-(*
-  Literature:
-  [1] van Raamsdonk, Femke, et al. "Perpetual Reductions in λ-Calculus." Information and Computation 149.2 (1999): 173-225.
-  [2] Neergaard, Peter Møller. "Theoretical pearls: A bargain for intersection types: a simple strong normalization proof." Journal of Functional Programming 15.5 (2005): 669-677.
+  Theorem wn_step'_sn_step (M N : term) : steps' M N -> normal_form N -> sn M.
 *)
 
 Require Import BetaPrime.CD.
@@ -29,7 +18,7 @@ Import Lambda.
 
 Require Import ssreflect.
 
-(* Set Default Goal Selector "!". *)
+Set Default Goal Selector "!".
 
 Unset Implicit Arguments.
 
@@ -128,6 +117,7 @@ Context (subject_expansion : forall M N, step' M N -> typable N -> typable M).
 
 #[local] Notation steps' M N := (clos_refl_trans term (fun M N => step' M N) M N).
 
+(* if subject expansion holds, weak normalization implies strong normalization *)
 Theorem wn_step'_sn_step (M N : term) : steps' M N -> normal_form N -> sn M.
 Proof.
   move=> /clos_rt_rt1n_iff HMN HN.

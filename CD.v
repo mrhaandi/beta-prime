@@ -1,15 +1,5 @@
 (*
-  Author(s):
-    Andrej Dudenhefner (1)
-  Affiliation(s):
-    (1) TU Dortmund University, Dortmund, Germany
-*)
-
-(*
-  Problem(s):
-    Intersection Type Type Checking  (CD_TC)
-    Intersection Type Typability (CD_TYP)
-    Intersection Type Inhabitation (CD_INH)
+  Coppo-Dezani Intersection Type System
 
   Literature:
     [1] Coppo, Mario, and Mariangiola Dezani-Ciancaglini.
@@ -46,15 +36,3 @@ Inductive type_assignment (Gamma : list ty) : term -> sty -> Prop :=
 
 Inductive typable (M : term): Prop :=
   typable_intro Gamma t : type_assignment Gamma M t -> typable M.
-
-(* Intersection Type Type Checking *)
-Definition CD_TC : (list ty) * term * sty -> Prop :=
-  fun '(Gamma, M, t) => type_assignment Gamma M t.
-
-(* Intersection Type Typability *)
-Definition CD_TYP : term -> Prop :=
-  fun M => exists Gamma t, type_assignment Gamma M t.
-
-(* Intersection Type Inhabitation *)
-Definition CD_INH : (list ty) * sty -> Prop :=
-  fun '(Gamma, t) => exists M, type_assignment Gamma M t.

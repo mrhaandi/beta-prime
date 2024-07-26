@@ -2,7 +2,7 @@
 
 Require Import PeanoNat Lia List Relations.
 Import ListNotations.
-From BetaPrime Require Import Lambda Util.facts Util.confluence.
+From BetaPrime Require Import Lambda Util.facts.
 
 Require Import ssreflect.
 
@@ -872,125 +872,6 @@ Lemma allfv_ren_lt i n M :
 Proof.
   move=> ?. apply: allfv_ren. apply: allfv_trivial.
   move=> /=. lia.
-Qed.
-
-Module Confluence.
-(* parallel reduction *)
-Inductive par : term -> term -> Prop :=
-  | par_var x : par (var x) (var x)
-  | par_lam M M' : par M M' -> par (lam M) (lam M')
-  | par_step M M' N N': par M M' -> par N N' -> par (app (lam M) N) (subst (scons N' var) M')
-  | par_app M M' N N': par M M' -> par N N' -> par (app M N) (app M' N').
-
-Lemma par_step' M M' N N' T : par M M' -> par N N' -> T = (subst (scons N' var) M') -> par (app (lam M) N) T.
-Proof.
-  intros ?? ->. now apply par_step.
-Qed.
-
-Lemma reflexive_par : reflexive par.
-Proof.
-  intros M. now induction M; auto using par.
-Qed.
-
-Lemma inclusion_step_par : inclusion term step par.
-Proof.
-  intros M N H. now induction H; auto using par, reflexive_par.
-Qed.
-
-Lemma inclusion_par_steps : inclusion term par rt_steps.
-Proof.
-  intros M N H. induction H.
-  - now apply rt_refl.
-  - now apply stepsLam.
-  - eapply rt_trans.
-    + apply rt_step. now apply stepSubst.
-    + apply steps_subst''; [|assumption].
-      intros [|x]; [assumption|].
-      apply rt_refl.
-  - eapply rt_trans.
-    + apply stepsAppL. eassumption.
-    + apply stepsAppR. eassumption.
-Qed.
-
-Fixpoint rho (M : term) :=
-  match M with
-  | var x => var x
-  | lam M => lam (rho M)
-  | app (lam M) N => subst (scons (rho N) var) (rho M)
-  | app M N => app (rho M) (rho N)
-  end.
-
-Lemma par_ren xi M M' : par M M' -> par (ren xi M) (ren xi M').
-Proof.
-  intros H. revert xi. induction H; intros xi; cbn.
-  - now apply par_var.
-  - now apply par_lam; auto.
-  - eapply par_step'; [auto..|].
-    rewrite ren_subst_term subst_ren_term.
-    apply ext_subst_term. now intros [|x].
-  - now apply par_app; auto.
-Qed.
-
-Lemma par_subst sigma sigma' M M' : (forall x, par (sigma x) (sigma' x)) -> par M M' -> par (subst sigma M) (subst sigma' M').
-Proof.
-  intros E H. revert sigma sigma' E.
-  induction H as [x|M M' H IH|M M' N N' H1 IH1 H2 IH2|M M' N N' H1 IH1 H2 IH2].
-  - intros ?? E. now apply E.
-  - intros ?? E. cbn. apply par_lam. apply IH.
-    intros [|x]; cbn.
-    + now apply reflexive_par.
-    + apply par_ren. now apply E.
-  - intros ?? E. cbn. eapply (par_step' _ (subst (up sigma') M') _ (subst sigma' N')).
-    + apply IH1. intros [|x]; cbn.
-      * apply reflexive_par.
-      * apply par_ren. apply E.
-    + apply IH2. apply E.
-    + rewrite !subst_subst_term. apply ext_subst_term. intros [|x]; cbn.
-      * easy.
-      * now rewrite subst_ren_term subst_var_term.
-  - intros ?? E. cbn. apply par_app.
-    + now apply IH1.
-    + now apply IH2.
-Qed.
-
-Lemma tak_fun_par_rho : tak_fun term par rho.
-Proof.
-  intros M N H.
-  induction H as [x|M M' H IH|M M' N N' H1 IH1 H2 IH2|M M' N N' H1 IH1 H2 IH2]; cbn.
-  - now apply par_var.
-  - now apply par_lam.
-  - apply par_subst; [|assumption].
-    intros [|x]; [assumption|].
-    apply reflexive_par.
-  - destruct M.
-    + now apply par_app.
-    + now apply par_app.
-    + inversion H1. subst. apply par_step; [|assumption].
-      inversion IH1. now subst.
-Qed.
-End Confluence.
-
-Lemma confluence_step: confluent step.
-Proof.
-  eapply TMT.
-  - apply Confluence.inclusion_step_par.
-  - apply Confluence.inclusion_par_steps.
-  - apply Confluence.reflexive_par.
-  - apply Confluence.tak_fun_par_rho.
-Qed.
-
-Lemma steps_nf_elim {P : Prop} {M M' N : term} : normal_form N -> rt_steps M M' -> (rt_steps M' N -> P) -> rt_steps M N -> P.
-Proof.
-  move=> HN /confluence_step HM H /HM [N'] [H'] H''. apply: H.
-  apply: rt_trans; first by eassumption.
-  move: H'' HN => /clos_rt_rt1n_iff [].
-  - move=> *. by apply: rt_refl.
-  - by move=> > /normal_form_not_step.
-Qed.
-
-Lemma steps_var_elim {P : Prop} {M M' : term} {x : nat} : rt_steps M M' -> (rt_steps M' (var x) -> P) -> rt_steps M (var x) -> P.
-Proof.
-  apply: steps_nf_elim. by do 2 constructor.
 Qed.
 
 Module TermNotations.

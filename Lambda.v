@@ -1,10 +1,9 @@
 (*
-  Author(s):
-    Andrej Dudenhefner (1)
-  Affiliation(s):
-    (1) TU Dortmund University, Dortmund, Germany
+  Contents:
+    lambda-terms using de Bruijn encoding
+    parallel term substitution
+    beta-reduction
 *)
-
 Require Import Relation_Operators.
 
 (* function composition *)

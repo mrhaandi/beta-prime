@@ -1,21 +1,9 @@
 (*
-  Author(s):
-    Andrej Dudenhefner (1)
-  Affiliation(s):
-    (1) TU Dortmund University, Dortmund, Germany
-*)
+  weak IK'-normalization implies strong beta-normaliztation (and vice versa)
 
-(*
-  Reduction from:
-    Strong normalization for given closed lambda-terms (SNclosed)
-  to:
-    Intersection Type Typability (CD_TYP)
-*)
+  Theorem sn_step_wn_step' M : sn M -> exists N, steps' M N /\ normal_form N.
+  Theorem wn_step'_sn_step (M N : term) : steps' M N -> normal_form N -> sn M.
 
-(*
-  Literature:
-  [1] van Raamsdonk, Femke, et al. "Perpetual Reductions in λ-Calculus." Information and Computation 149.2 (1999): 173-225.
-  [2] Neergaard, Peter Møller. "Theoretical pearls: A bargain for intersection types: a simple strong normalization proof." Journal of Functional Programming 15.5 (2005): 669-677.
 *)
 
 Require Import BetaPrime.CD.

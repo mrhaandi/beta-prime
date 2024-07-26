@@ -1,3 +1,5 @@
+(* generic facts *)
+
 Require Import Relations List Lia PeanoNat.
 Import ListNotations.
 Require Import ssreflect.

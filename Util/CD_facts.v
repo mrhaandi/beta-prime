@@ -1,3 +1,5 @@
+(* facts on the intersection type assignment system *)
+
 Require Import BetaPrime.CD.
 Require Import PeanoNat List Relations Lia.
 Require Import BetaPrime.Lambda.
