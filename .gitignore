@@ -1,0 +1,9 @@
+*.aux
+*.d
+*.cache
+*.glob
+*.vo
+*.vok
+*.vos
+*.coq
+*.coq.conf

@@ -1,0 +1,13 @@
+-Q . BetaPrime
+
+Lambda.v
+CD.v
+WN_SN.v
+IKPrime_WN_SN.v
+
+Util/facts.v
+Util/confluence.v
+Util/term_facts.v
+Util/CD_facts.v
+Util/CD_fundamental.v
+Util/CD_sn.v
